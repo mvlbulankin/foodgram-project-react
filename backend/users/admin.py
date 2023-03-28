@@ -1,33 +1,16 @@
 from django.contrib import admin
-from import_export import resources
-from import_export.admin import ImportExportModelAdmin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group
 
 from .models import User
 
 
-class UserResource(resources.ModelResource):
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'first_name',
-            'last_name',
-            'username',
-            'email',
-            'password',
-        )
+class CustomUserAdmin(UserAdmin):
+    """Админка для модели User."""
+    search_fields = ('email', 'username')
+    list_filter = ('email', 'username')
+    ordering = ('pk',)
 
 
-class UserAdmin(ImportExportModelAdmin):
-    resource_classes = (UserResource,)
-    list_display = (
-        'id',
-        'first_name',
-        'last_name',
-        'username',
-        'email',
-        'password',
-    )
-
-
-admin.site.register(User, UserAdmin)
+admin.site.unregister(Group)
+admin.site.register(User, CustomUserAdmin)

@@ -4,11 +4,6 @@ from .validators import validate_username
 
 
 class User(AbstractUser):
-    class RoleChoices(models.TextChoices):
-        USER = 'user'
-        ADMIN = 'admin'
-        MODERATOR = 'moderator'
-
     first_name = models.CharField(
         'Имя',
         max_length=150,
@@ -42,3 +37,27 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class Subscription(models.Model):
+    """Модель для подписок."""
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик',
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Автор рецепта',
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'user'],
+                name='unique_subscribe'
+            )
+        ]
