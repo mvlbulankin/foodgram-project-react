@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from users.models import Subscription, User
+from .models import Subscription, User
+from recipes.serializers import SmallRecipeSerializer
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -36,8 +37,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
     username = serializers.ReadOnlyField(source='author.username')
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
@@ -58,12 +59,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         return Subscription.objects.filter(
             author=obj.author, user=user).exists()
 
-    # def get_recipes(self, obj):
-    #     """Получение списка рецептов автора."""
-    #     from recipes.serializers import SmallRecipeSerializer
-    #     limit = self.context.get('request').GET.get('recipes_limit')
-    #     recipe_obj = obj.author.recipes.all()
-    #     if limit:
-    #         recipe_obj = recipe_obj[:int(limit)]
-    #     serializer = SmallRecipeSerializer(recipe_obj, many=True)
-    #     return serializer.data
+    def get_recipes(self, obj):
+        """Получение списка рецептов автора."""
+        limit = self.context.get('request').GET.get('recipes_limit')
+        recipe_obj = obj.author.recipes.all()
+        if limit:
+            recipe_obj = recipe_obj[:int(limit)]
+        serializer = SmallRecipeSerializer(recipe_obj, many=True)
+        return serializer.data

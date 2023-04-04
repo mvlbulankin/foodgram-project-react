@@ -4,6 +4,7 @@ from .validators import validate_username
 
 
 class User(AbstractUser):
+    """Модель пользователя."""
     first_name = models.CharField(
         'Имя',
         max_length=150,
@@ -40,7 +41,7 @@ class User(AbstractUser):
 
 
 class Subscription(models.Model):
-    """Модель для подписок."""
+    """Модель подписок."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
