@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from .models import Subscription, User
-from recipes.serializers import SmallRecipeSerializer
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -37,20 +36,20 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='author.id')
     email = serializers.ReadOnlyField(source='author.email')
-    username = serializers.ReadOnlyField(source='author.username')
     first_name = serializers.ReadOnlyField(source='author.first_name')
+    id = serializers.ReadOnlyField(source='author.id')
+    is_subscribed = serializers.SerializerMethodField()
     last_name = serializers.ReadOnlyField(source='author.last_name')
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.ReadOnlyField(source='author.recipes.count')
-    is_subscribed = serializers.SerializerMethodField()
+    username = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
         model = Subscription
         fields = (
-            'email', 'id', 'username', 'first_name', 'last_name',
-            'is_subscribed', 'recipes', 'recipes_count'
+            'email', 'id', 'is_subscribed', 'first_name', 'last_name',
+            'recipes', 'recipes_count', 'username',
         )
 
     def get_is_subscribed(self, obj):
@@ -61,9 +60,10 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         """Получение списка рецептов автора."""
+        from recipes.serializers import SimpleRecipeSerializer
         limit = self.context.get('request').GET.get('recipes_limit')
         recipe_obj = obj.author.recipes.all()
         if limit:
             recipe_obj = recipe_obj[:int(limit)]
-        serializer = SmallRecipeSerializer(recipe_obj, many=True)
+        serializer = SimpleRecipeSerializer(recipe_obj, many=True)
         return serializer.data
