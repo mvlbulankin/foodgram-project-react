@@ -26,13 +26,13 @@ praktikum_new_diplom
 
 * ```http://127.0.0.1:8000/api/users/{id}/subscribe/``` DELETE-запрос — Отписаться от пользователя.
 
-### Теги: проверить работу!!!
+### Теги:
 
 * ```http://127.0.0.1:8000/api/tags/``` GET-запрос — Список тегов.
 
 * ```http://127.0.0.1:8000/api/tags/{id}/``` GET-запрос — Получить тег.
 
-### Рецепты: проверить работу!!!
+### Рецепты:
 
 * ```http://127.0.0.1:8000/api/recipes/``` GET-запрос — Список рецептов.
 
@@ -44,17 +44,67 @@ praktikum_new_diplom
 
 * ```http://127.0.0.1:8000/api/recipes/{id}/``` DELETE-запрос — Удалить рецепт.
 
-### Ингридиенты: проверить работу!!!
+### Ингридиенты:
 
 * ```http://127.0.0.1:8000/api/ingredients/``` GET-запрос — Список ингридиентов.
 
 * ```http://127.0.0.1:8000/api/ingredients/{id}/``` GET-запрос — Получить ингридиент.
 
-### Рецепты: проверить работу!!!
+### Избранное:
 
-* ```http://127.0.0.1:8000/api/recipes/``` GET-запрос — Список рецептов.
+* ```http://127.0.0.1:8000/api/recipes/{id}/favorite/``` POST-запрос — Добавить рецепт в избранное.
 
-* ```http://127.0.0.1:8000/api/recipes/``` POST-запрос — Создать рецепт.
+* ```http://127.0.0.1:8000/api/recipes/{id}/favorite/``` DELETE-запрос — Удалить рецепт из избранного.
 
-* ```http://127.0.0.1:8000/api/recipes/{id}/``` GET-запрос — Получить рецепт.
+### Список покупок - проверить скачивание файла:
 
+* ```http://127.0.0.1:8000/api/recipes/download_shopping_cart/``` GET-запрос — Скачать список покупок.
+
+* ```http://127.0.0.1:8000/api/recipes/{id}/shopping_cart/``` POST-запрос — Добавить рецепт в список покупок.
+
+* ```http://127.0.0.1:8000/api/recipes/{id}/shopping_cart/``` DELETE-запрос — Удалить рецепт из списка покупок.
+
+----
+
+### Как запустить проект:
+
+Клонируйте репозиторий и переходите в него в командной строке:
+
+```
+git clone 
+```
+
+```
+cd infra
+```
+
+Запустите контейнеры:
+
+```
+docker compose up -d
+```
+
+Выполните миграции:
+
+```
+docker compose exec backend python manage.py migrate
+```
+
+Создайте суперпользователя:
+
+```
+docker compose exec backend python manage.py createsuperuser
+```
+
+Соберите статику:
+
+```
+docker compose exec backend python manage.py collectstatic --no-input
+```
+
+Зайдите на http://localhost/admin/ и убедитесь, 
+что страница отображается полностью и статика подгрузилась:
+
+----
+
+python3 manage.py load_data_csv --use_default_dataset
