@@ -12,6 +12,11 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://*localhost',
+    'https://*localhost',
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,12 +27,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'dotenv',
     'api',
     'ingredients',
     'recipes',
     'tags',
     'users',
-    'dotenv',
 ]
 
 MIDDLEWARE = [
