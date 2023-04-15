@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from fpdf import FPDF
@@ -72,32 +72,37 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.delete_relation(ShoppingCart, user, pk, name)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(methods=['get'], detail=False, url_path='download_shopping_cart',
+    @action(methods=['get'], detail=False,
+            url_path='download_shopping_cart',
             url_name='download_shopping_cart')
-    def download_cart(self, request):
-        """Формирование и скачивание списка покупок."""
+    def download_shopping_cart(self, request):
+        """Cкачать список покупок."""
         user = request.user
         ingredients = IngredientAmount.objects.filter(
-            recipe__sh_cart__user=user).values(
-                'ingredient__name', 'ingredient__measurement_unit').annotate(
-                    Sum('amount', distinct=True))
-        pdf = FPDF()
+            recipe__sh_cart__user=user).values('ingredient__name',
+                                               'ingredient__measurement_unit').annotate(
+            Sum('amount', distinct=True))
+        pdf = FPDF('P', 'mm', 'A4')
         pdf.add_page()
-        pdf.add_font(
-            'DejaVu', '', './recipes/fonts/DejaVuSansCondensed.ttf', uni=True)
-        pdf.set_font('DejaVu', size=14)
-        pdf.cell(txt='Список покупок', center=True)
-        pdf.ln(8)
-        for i, ingredient in enumerate(ingredients):
+        pdf.add_font('DejaVu', '', './recipes/fonts/DejaVuSansCondensed.ttf',
+                     uni=True)
+        pdf.set_font('Dejavu', '', 16)
+        pdf.cell(40, 10, 'Список покупок:', 0, 1)
+        pdf.cell(40, 10, '', 0, 1)
+        pdf.set_font('Dejavu', '', 12)
+        pdf.cell(100, 10, 'Название продукта')
+        pdf.cell(100, 10, 'Количество')
+        pdf.ln()
+        pdf.line(10, 30, 150, 30)
+        pdf.line(10, 40, 150, 40)
+        for num, ingredient in enumerate(ingredients):
+            amount = ingredient['amount__sum']
             name = ingredient['ingredient__name']
             unit = ingredient['ingredient__measurement_unit']
-            amount = ingredient['amount__sum']
-            pdf.cell(40, 10, f'{i + 1}) {name} - {amount} {unit}')
+            pdf.cell(100, 10, f'{num + 1}. {name}')
+            pdf.cell(100, 10, f'{amount} {unit}')
             pdf.ln()
-        file = pdf.output(dest='S')
-        response = HttpResponse(
-            content_type='application/pdf', status=status.HTTP_200_OK)
-        response['Content-Disposition'] = (
-            'attachment; filename="shopping_cart.pdf"')
-        response.write(bytes(file))
-        return response
+        pdf.output('shopping_cart.pdf', 'F')
+        return FileResponse(open('shopping_cart.pdf', 'rb'),
+                            as_attachment=True,
+                            content_type='application/pdf')

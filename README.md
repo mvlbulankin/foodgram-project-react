@@ -122,4 +122,4 @@ docker compose exec backend python manage.py collectstatic --no-input
 
 ----
 
-python3 manage.py load_data_csv --use_default_dataset
+docker compose exec backend python manage.py load_data_csv --use_default_dataset
