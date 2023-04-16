@@ -4,7 +4,7 @@ from django.conf import settings
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import recipes.validators
+import api.validators
 
 
 class Migration(migrations.Migration):
@@ -73,7 +73,11 @@ class Migration(migrations.Migration):
                 (
                     "cooking_time",
                     models.IntegerField(
-                        validators=[recipes.validators.validate_time]
+                        validators=[
+                            django.core.validators.MinValueValidator(
+                                1, "Не может быть менее 1"
+                            )
+                        ]
                     ),
                 ),
                 (

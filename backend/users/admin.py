@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
+from .models import Subscription, User
 from ingredients.models import Ingredient
 from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
 from tags.models import Tag
-from .models import Subscription, User
 
 
 @admin.register(User)
@@ -14,9 +14,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "username",
     )
-    ordering = (
-        "pk",
-    )
+    ordering = ("pk",)
     search_fields = (
         "email",
         "username",
@@ -35,9 +33,7 @@ class IngredientAdmin(admin.ModelAdmin):
         "name",
         "measurement_unit",
     )
-    search_fields = (
-        "name",
-    )
+    search_fields = ("name",)
 
 
 @admin.register(Tag)
@@ -54,9 +50,7 @@ class TagAdmin(admin.ModelAdmin):
         "name",
         "slug",
     )
-    search_fields = (
-        "name",
-    )
+    search_fields = ("name",)
 
 
 class IngredientAmountInline(admin.TabularInline):
@@ -66,12 +60,8 @@ class IngredientAmountInline(admin.TabularInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     empty_value_display = "-пусто-"
-    exclude = (
-        "ingredients",
-    )
-    inlines = (
-        IngredientAmountInline,
-    )
+    exclude = ("ingredients",)
+    inlines = (IngredientAmountInline,)
     list_display = (
         "pk",
         "author",

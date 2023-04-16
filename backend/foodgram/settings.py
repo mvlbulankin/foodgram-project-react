@@ -65,7 +65,9 @@ WSGI_APPLICATION = "foodgram.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DB_ENGINE", default='django.db.backends.postgresql'),
+        "ENGINE": os.getenv(
+            "DB_ENGINE", default="django.db.backends.postgresql"
+        ),
         "NAME": os.getenv("DB_NAME"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
@@ -99,7 +101,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.TokenAuthentication",
@@ -122,9 +123,9 @@ DJOSER = {
         "user_list": ["rest_framework.permissions.AllowAny"],
     },
     "SERIALIZERS": {
-        "current_user": "users.serializers.CustomUserSerializer",
-        "user": "users.serializers.CustomUserSerializer",
-        "user_create": "users.serializers.CustomUserSerializer",
+        "current_user": "api.serializers.CustomUserSerializer",
+        "user": "api.serializers.CustomUserSerializer",
+        "user_create": "api.serializers.CustomUserSerializer",
     },
 }
 

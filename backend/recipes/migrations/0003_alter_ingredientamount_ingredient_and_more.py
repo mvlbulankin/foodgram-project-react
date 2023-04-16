@@ -5,25 +5,21 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("ingredients", "0001_initial"),
-        ("recipes", "0002_shoppingcart_favorite_and_more"),
+        ('ingredients', '0001_initial'),
+        ('recipes', '0002_shoppingcart_favorite_and_more'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="ingredientamount",
-            name="ingredient",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.PROTECT,
-                to="ingredients.ingredient",
-            ),
+            model_name='ingredientamount',
+            name='ingredient',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='ingredients.ingredient'),
         ),
         migrations.AlterField(
-            model_name="recipe",
-            name="ingredients",
-            field=models.ManyToManyField(
-                through="recipes.IngredientAmount", to="ingredients.ingredient"
-            ),
+            model_name='recipe',
+            name='ingredients',
+            field=models.ManyToManyField(through='recipes.IngredientAmount', to='ingredients.ingredient'),
         ),
     ]

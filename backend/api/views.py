@@ -2,15 +2,96 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
 from fpdf import FPDF
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import RecipeFilter
-from .models import Favorite, IngredientAmount, Recipe, ShoppingCart
+from .filters import CustomSearchFilter, RecipeFilter
 from .permissions import AuthorOrReadOnly
-from .serializers import RecipeSerializer, SimpleRecipeSerializer
+from .serializers import (
+    IngredientSerializer,
+    RecipeSerializer,
+    SimpleRecipeSerializer,
+    SubscriptionSerializer,
+    TagSerializer,
+)
+from ingredients.models import Ingredient
+from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
+from tags.models import Tag
+from users.models import Subscription, User
+
+
+class CustomUserViewSet(UserViewSet):
+    queryset = User.objects.all()
+
+    @action(
+        detail=False,
+        url_path="subscriptions",
+        url_name="subscriptions",
+        permission_classes=[IsAuthenticated],
+    )
+    def subscriptions(self, request):
+        user = request.user
+        queryset = user.follower.all()
+        pages = self.paginate_queryset(queryset)
+        serializer = SubscriptionSerializer(
+            pages, many=True, context={"request": request}
+        )
+        return self.get_paginated_response(serializer.data)
+
+    @action(
+        methods=["post", "delete"],
+        detail=True,
+        url_path="subscribe",
+        url_name="subscribe",
+        permission_classes=[IsAuthenticated],
+    )
+    def subscribe(self, request, id=None):
+        user = request.user
+        author = get_object_or_404(User, id=id)
+        if user == author:
+            return Response(
+                {"errors": "Нельзя подписаться/отписаться на/от себя"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        subscription = Subscription.objects.filter(author=author, user=user)
+        if request.method == "POST":
+            if subscription.exists():
+                return Response(
+                    {"errors": "Нельзя подписаться повторно"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            queryset = Subscription.objects.create(author=author, user=user)
+            serializer = SubscriptionSerializer(
+                queryset, context={"request": request}
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == "DELETE":
+            if not subscription.exists():
+                return Response(
+                    {"errors": "Нельзя отписаться повторно"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Tag.objects.all()
+    pagination_class = None
+    serializer_class = TagSerializer
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    filter_backends = [CustomSearchFilter]
+    queryset = Ingredient.objects.all()
+    pagination_class = None
+    search_fields = ("^name",)
+    serializer_class = IngredientSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -24,7 +105,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     def add(self, model, user, pk, name):
-        """Добавление рецепта в список пользователя."""
         recipe = get_object_or_404(Recipe, pk=pk)
         relation = model.objects.filter(user=user, recipe=recipe)
         if relation.exists():
@@ -37,7 +117,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_relation(self, model, user, pk, name):
-        """ "Удаление рецепта из списка пользователя."""
         recipe = get_object_or_404(Recipe, pk=pk)
         relation = model.objects.filter(user=user, recipe=recipe)
         if not relation.exists():
@@ -55,7 +134,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_name="favorite",
     )
     def favorite(self, request, pk=None):
-        """Добавление и удаление рецептов - Избранное."""
         user = request.user
         if request.method == "POST":
             name = "избранное"
@@ -72,7 +150,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_name="shopping_cart",
     )
     def shopping_cart(self, request, pk=None):
-        """Добавление и удаление рецептов - Список покупок."""
         user = request.user
         if request.method == "POST":
             name = "список покупок"
@@ -89,7 +166,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_name="download_shopping_cart",
     )
     def download_shopping_cart(self, request):
-        """Cкачать список покупок."""
         user = request.user
         ingredients = (
             IngredientAmount.objects.filter(recipe__sh_cart__user=user)

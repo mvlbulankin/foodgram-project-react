@@ -4,19 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("users", "0002_subscription_subscription_unique_subscribe"),
+        ('users', '0002_subscription_subscription_unique_subscribe'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="user",
-            name="first_name",
-            field=models.CharField(max_length=150, verbose_name="Имя"),
+            model_name='user',
+            name='first_name',
+            field=models.CharField(max_length=150, verbose_name='Имя'),
         ),
         migrations.AlterField(
-            model_name="user",
-            name="last_name",
-            field=models.CharField(max_length=150, verbose_name="Фамилия"),
+            model_name='user',
+            name='last_name',
+            field=models.CharField(max_length=150, verbose_name='Фамилия'),
         ),
     ]

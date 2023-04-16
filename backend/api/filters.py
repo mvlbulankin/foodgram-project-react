@@ -1,15 +1,26 @@
 from django_filters import ModelMultipleChoiceFilter
 from django_filters.rest_framework import FilterSet, filters
+from rest_framework.filters import SearchFilter
 
 from recipes.models import Recipe
 from tags.models import Tag
-from users.models import User
+# from users.models import User
+
+
+class CustomSearchFilter(SearchFilter):
+    search_param = "name"
 
 
 class RecipeFilter(FilterSet):
-    author = filters.ModelChoiceFilter(queryset=User.objects.all())
-    is_favorited = filters.BooleanFilter(method="filter_favorited")
-    is_in_shopping_cart = filters.BooleanFilter(method="filter_shopping_cart")
+    # author = filters.ModelChoiceFilter(
+    #     queryset=User.objects.all()
+    # )
+    is_favorited = filters.BooleanFilter(
+        method="filter_favorited"
+    )
+    is_in_shopping_cart = filters.BooleanFilter(
+        method="filter_shopping_cart"
+    )
     tags = ModelMultipleChoiceFilter(
         field_name="tags__slug",
         to_field_name="slug",
@@ -28,4 +39,7 @@ class RecipeFilter(FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ("tags", "author")
+        fields = (
+            "tags",
+            "author",
+        )

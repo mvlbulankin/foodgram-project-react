@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
 from .validators import validate_username
 
 
@@ -46,7 +47,7 @@ class Subscription(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name="following",
-        verbose_name="Автор рецепта",
+        verbose_name="Автор",
     )
     user = models.ForeignKey(
         User,
@@ -56,6 +57,8 @@ class Subscription(models.Model):
     )
 
     class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
         constraints = [
             models.UniqueConstraint(
                 fields=["author", "user"],
