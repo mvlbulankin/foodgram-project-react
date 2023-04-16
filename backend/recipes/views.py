@@ -15,7 +15,7 @@ from .serializers import RecipeSerializer, SimpleRecipeSerializer
 
 class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
-    filter_class = RecipeFilter
+    filterset_class = RecipeFilter
     queryset = Recipe.objects.all()
     permission_classes = (AuthorOrReadOnly,)
     serializer_class = RecipeSerializer
@@ -46,7 +46,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         relation.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['post', 'delete'], detail=True, url_path='favorite',
+    @action(methods=['post', 'delete'], detail=True,
+            url_path='favorite',
             url_name='favorite')
     def favorite(self, request, pk=None):
         """Добавление и удаление рецептов - Избранное."""
@@ -59,7 +60,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.delete_relation(Favorite, user, pk, name)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(methods=['post', 'delete'], detail=True, url_path='shopping_cart',
+    @action(methods=['post', 'delete'], detail=True,
+            url_path='shopping_cart',
             url_name='shopping_cart')
     def shopping_cart(self, request, pk=None):
         """Добавление и удаление рецептов - Список покупок."""

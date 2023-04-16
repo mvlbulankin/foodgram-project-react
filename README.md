@@ -1,8 +1,13 @@
-praktikum_new_diplom
+![example workflow](https://github.com/mvlbulankin/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
+
+# Проект Foodgram
+
+### Описание 
+Проект Foodgram, «Продуктовый помощник» - онлайн-сервис и API для него. На этом сервисе пользователи могут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
 ----
 
-## Стек
+### Стек
 
 [![Python](https://img.shields.io/badge/-Python-464646?style=flat-square&logo=Python)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/-Django-464646?style=flat-square&logo=Django)](https://www.djangoproject.com/)
@@ -71,7 +76,7 @@ praktikum_new_diplom
 
 * ```http://127.0.0.1:8000/api/recipes/{id}/favorite/``` DELETE-запрос — Удалить рецепт из избранного.
 
-### Список покупок - проверить скачивание файла:
+### Список покупок:
 
 * ```http://127.0.0.1:8000/api/recipes/download_shopping_cart/``` GET-запрос — Скачать список покупок.
 
@@ -117,9 +122,17 @@ docker compose exec backend python manage.py createsuperuser
 docker compose exec backend python manage.py collectstatic --no-input
 ```
 
+Импортируйте данные из csv-файлов в базу данных:
+
+```
+docker compose exec backend python manage.py load_data_csv --use_default_dataset
+```
+
 Зайдите на http://localhost/admin/ и убедитесь, 
 что страница отображается полностью и статика подгрузилась:
 
 ----
 
-docker compose exec backend python manage.py load_data_csv --use_default_dataset
+### Автор проекта:
+
+**Михаил Буланкин**
