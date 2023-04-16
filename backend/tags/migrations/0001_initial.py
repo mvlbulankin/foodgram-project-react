@@ -5,34 +5,60 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Ingredient',
+            name="Ingredient",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('measurement_unit', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("measurement_unit", models.CharField(max_length=200)),
             ],
             options={
-                'ordering': ('id',),
+                "ordering": ("id",),
             },
         ),
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200, unique=True)),
-                ('color', models.CharField(max_length=7, unique=True)),
-                ('slug', models.SlugField(max_length=200, unique=True, validators=[django.core.validators.RegexValidator(message='Только латинские буквы и символы "-" "_"', regex='^[-a-zA-Z0-9_]+$')])),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200, unique=True)),
+                ("color", models.CharField(max_length=7, unique=True)),
+                (
+                    "slug",
+                    models.SlugField(
+                        max_length=200,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                message='Только латинские буквы и символы "-" "_"',
+                                regex="^[-a-zA-Z0-9_]+$",
+                            )
+                        ],
+                    ),
+                ),
             ],
             options={
-                'ordering': ('id',),
+                "ordering": ("id",),
             },
         ),
     ]

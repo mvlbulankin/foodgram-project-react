@@ -9,5 +9,5 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [CustomSearchFilter]
     queryset = Ingredient.objects.all()
     pagination_class = None
-    search_fields = ('^name',)
+    search_fields = ("^name",)
     serializer_class = IngredientSerializer

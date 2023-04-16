@@ -7,23 +7,20 @@ class Tag(models.Model):
         max_length=200,
         unique=True,
     )
-    color = models.CharField(
-        max_length=7,
-        unique=True
-    )
+    color = models.CharField(max_length=7, unique=True)
     slug = models.SlugField(
         max_length=200,
         unique=True,
         validators=[
             RegexValidator(
-                regex=r'^[-a-zA-Z0-9_]+$',
+                regex=r"^[-a-zA-Z0-9_]+$",
                 message='Только латинские буквы и символы "-" "_"',
             ),
-        ]
+        ],
     )
 
     class Meta:
-        ordering = ('id',)
+        ordering = ("id",)
 
     def __str__(self):
         return self.name

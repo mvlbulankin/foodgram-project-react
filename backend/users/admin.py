@@ -8,95 +8,130 @@ from tags.models import Tag
 from .models import Subscription, User
 
 
+@admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    """Кастомная админка для модели User."""
-    search_fields = ('email', 'username')
-    list_filter = ('email', 'username')
-    ordering = ('pk',)
+    list_filter = (
+        "email",
+        "username",
+    )
+    ordering = (
+        "pk",
+    )
+    search_fields = (
+        "email",
+        "username",
+    )
 
 
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    """Кастомная админка для модели Ingredient."""
+    empty_value_display = "-пусто-"
     list_display = (
-        'pk',
-        'name',
-        'measurement_unit',
+        "pk",
+        "name",
+        "measurement_unit",
     )
-    list_editable = ('name', 'measurement_unit')
-    search_fields = ('name',)
-    empty_value_display = '-пусто-'
+    list_editable = (
+        "name",
+        "measurement_unit",
+    )
+    search_fields = (
+        "name",
+    )
 
 
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    """Кастомная админка для модели Tag."""
+    empty_value_display = "-пусто-"
     list_display = (
-        'pk',
-        'name',
-        'color',
-        'slug',
+        "pk",
+        "name",
+        "color",
+        "slug",
     )
-    list_editable = ('name', 'color', 'slug')
-    search_fields = ('name',)
-    empty_value_display = '-пусто-'
+    list_editable = (
+        "color",
+        "name",
+        "slug",
+    )
+    search_fields = (
+        "name",
+    )
 
 
 class IngredientAmountInline(admin.TabularInline):
     model = IngredientAmount
 
 
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    """Кастомная админка для модели Recipe."""
-    list_display = (
-        'pk',
-        'name',
-        'author',
-        'image',
-        'count_added'
+    empty_value_display = "-пусто-"
+    exclude = (
+        "ingredients",
     )
-    exclude = ('ingredients',)
-    inlines = (IngredientAmountInline,)
-    list_filter = ('author', 'name', 'tags')
-    search_fields = ('author__username', 'name', 'tags__name')
-    empty_value_display = '-пусто-'
+    inlines = (
+        IngredientAmountInline,
+    )
+    list_display = (
+        "pk",
+        "author",
+        "count_added",
+        "image",
+        "name",
+    )
+    list_filter = (
+        "author",
+        "name",
+        "tags",
+    )
+    search_fields = (
+        "author__username",
+        "name",
+        "tags__name",
+    )
 
     def count_added(self, obj):
         return obj.favorite.count()
 
 
+@admin.register(IngredientAmount)
 class IngredientAmountAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
-        'recipe',
-        'ingredient',
-        'amount'
+        "id",
+        "amount",
+        "ingredient",
+        "recipe",
     )
-    search_fields = ('recipe__name', 'ingredient__name')
+    search_fields = (
+        "ingredient__name",
+        "recipe__name",
+    )
 
 
+@admin.register(Favorite, ShoppingCart)
 class FavoriteShoppingAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
-        'user',
-        'recipe'
+        "id",
+        "recipe",
+        "user",
     )
-    search_fields = ('user__username', 'recipe__name')
+    search_fields = (
+        "user__username",
+        "recipe__name",
+    )
 
 
+@admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
-        'user',
-        'author'
+        "id",
+        "author",
+        "user",
     )
-    search_fields = ('user__username', 'author__username')
+    search_fields = (
+        "author__username",
+        "user__username",
+    )
 
 
 admin.site.unregister(Group)
-admin.site.register(User, CustomUserAdmin)
-admin.site.register(Subscription, SubscriptionAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Favorite, FavoriteShoppingAdmin)
-admin.site.register(ShoppingCart, FavoriteShoppingAdmin)
-admin.site.register(IngredientAmount, IngredientAmountAdmin)
