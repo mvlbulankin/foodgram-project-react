@@ -35,7 +35,7 @@ class User(AbstractUser):
         null=False,
         validators=[
             validate_username,
-        ],
+        ]
     )
 
     def __str__(self):
@@ -61,7 +61,7 @@ class Subscription(models.Model):
         verbose_name_plural = "Подписки"
         constraints = [
             models.UniqueConstraint(
-                fields=["author", "user"],
+                fields=("author", "user"),
                 name="unique_subscribe",
             )
         ]

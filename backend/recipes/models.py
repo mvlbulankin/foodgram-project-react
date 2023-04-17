@@ -14,7 +14,11 @@ class Recipe(models.Model):
     )
     cooking_time = models.IntegerField(
         "Время приготовления",
-        validators=[MinValueValidator(1, "Не может быть менее единицы")],
+        validators=[
+            MinValueValidator(
+                1, "Время приготовления не может быть менее одной минуты",
+            )
+        ]
     )
     image = models.ImageField(
         "Изображение",
@@ -67,7 +71,7 @@ class Favorite(models.Model):
         verbose_name_plural = "Избранные"
         constraints = [
             models.UniqueConstraint(
-                fields=["recipe", "user"],
+                fields=("recipe", "user"),
                 name="unique_favorite_recipe",
             )
         ]
@@ -75,7 +79,11 @@ class Favorite(models.Model):
 
 class IngredientAmount(models.Model):
     amount = models.PositiveIntegerField(
-        validators=[MinValueValidator(1, "Не может быть менее единицы")]
+        validators=[
+            MinValueValidator(
+                1, "Количество ингридиента не может быть менее единицы",
+            )
+        ]
     )
     ingredient = models.ForeignKey(
         Ingredient,
@@ -91,7 +99,7 @@ class IngredientAmount(models.Model):
         verbose_name_plural = "Количество ингредиентов"
         constraints = [
             models.UniqueConstraint(
-                fields=["recipe", "ingredient"],
+                fields=("recipe", "ingredient"),
                 name="unique_recipe_ingredient",
             )
         ]
@@ -101,12 +109,12 @@ class ShoppingCart(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name="sh_cart",
+        related_name="shopping_cart",
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="sh_cart",
+        related_name="shopping_cart",
     )
 
     class Meta:
@@ -114,7 +122,7 @@ class ShoppingCart(models.Model):
         verbose_name_plural = "Список покупок"
         constraints = [
             models.UniqueConstraint(
-                fields=["recipe", "user"],
+                fields=("recipe", "user"),
                 name="unique_cart_recipe",
             )
         ]

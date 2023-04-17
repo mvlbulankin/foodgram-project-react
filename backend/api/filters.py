@@ -4,7 +4,6 @@ from rest_framework.filters import SearchFilter
 
 from recipes.models import Recipe
 from tags.models import Tag
-# from users.models import User
 
 
 class CustomSearchFilter(SearchFilter):
@@ -12,9 +11,6 @@ class CustomSearchFilter(SearchFilter):
 
 
 class RecipeFilter(FilterSet):
-    # author = filters.ModelChoiceFilter(
-    #     queryset=User.objects.all()
-    # )
     is_favorited = filters.BooleanFilter(
         method="filter_favorited"
     )

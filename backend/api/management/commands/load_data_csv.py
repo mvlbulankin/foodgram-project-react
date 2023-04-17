@@ -1,13 +1,39 @@
 import csv
+from collections import OrderedDict
 
 from django.core.management import BaseCommand
+from django.shortcuts import get_object_or_404
 
 from ingredients.models import Ingredient
 from tags.models import Tag
 
 
+MODELS_FIELDS = {
+    'ingredient': Ingredient,
+    'tag': Tag,
+}
+
+DEFAULT_DATASET = OrderedDict({
+    'ingredients.csv': Ingredient,
+    'tags.csv': Tag,
+})
+
+DEFAULT_DATASET_PATH = 'static/data/'
+
+
 class Command(BaseCommand):
     help = "Добавление в БД дефолтного датасета с ингридиентами и тегами"
+
+    @staticmethod
+    def dict_reader_csv(csv_file, model):
+        reader = csv.DictReader(csv_file, delimiter=',')
+        for row in reader:
+            for field, value in row.items():
+                if field in MODELS_FIELDS.keys():
+                    row[field] = get_object_or_404(
+                        MODELS_FIELDS[field], pk=value
+                    )
+            model.objects.create(**row)
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -17,11 +43,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        with open("static/data/ingredients.csv", "rt", encoding="utf-8") as f:
-            reader = csv.reader(f, delimiter=",")
-            for row in reader:
-                Ingredient.objects.create(name=row[0], measurement_unit=row[1])
-        with open("static/data/tags.csv", "rt", encoding="utf-8") as f:
-            reader = csv.reader(f, delimiter=",")
-            for row in reader:
-                Tag.objects.create(name=row[0], color=row[1], slug=row[2])
+        for filename, model in DEFAULT_DATASET.items():
+            with open(
+                    DEFAULT_DATASET_PATH + filename, 'rt', encoding='utf-8'
+            ) as csv_file:
+                self.dict_reader_csv(csv_file, model)
