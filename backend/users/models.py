@@ -12,16 +12,6 @@ class User(AbstractUser):
         blank=False,
         null=False,
     )
-    first_name = models.CharField(
-        "Имя",
-        max_length=150,
-        blank=False,
-    )
-    last_name = models.CharField(
-        "Фамилия",
-        max_length=150,
-        blank=False,
-    )
     password = models.CharField(
         "Пароль",
         max_length=150,
@@ -59,9 +49,13 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=("author", "user"),
                 name="unique_subscribe",
+            ),
+            models.CheckConstraint(
+                check=models.Q(author=models.F("user")),
+                name="self_subscribe"
             )
-        ]
+        )

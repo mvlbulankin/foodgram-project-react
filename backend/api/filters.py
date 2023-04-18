@@ -30,7 +30,7 @@ class RecipeFilter(FilterSet):
 
     def filter_shopping_cart(self, queryset, name, value):
         if value:
-            return queryset.filter(sh_cart__user=self.request.user)
+            return queryset.filter(shopping_cart__user=self.request.user)
         return queryset
 
     class Meta:

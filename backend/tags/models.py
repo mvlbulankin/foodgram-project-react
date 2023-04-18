@@ -20,7 +20,9 @@ class Tag(models.Model):
         validators=[
             RegexValidator(
                 regex=r"^[-a-zA-Z0-9_]+$",
-                message="Только латинские буквы, дефис и нижнее подчеркивание",
+                message=(
+                    "Только латинские буквы, цифры, дефис и нижнее подчеркивание",
+                )
             )
         ]
     )
