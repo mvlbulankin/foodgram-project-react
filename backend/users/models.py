@@ -23,7 +23,7 @@ class User(AbstractUser):
         unique=True,
         blank=False,
         null=False,
-        validators=[validate_username]
+        validators=(validate_username,)
     )
 
     def __str__(self):

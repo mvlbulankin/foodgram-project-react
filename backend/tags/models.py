@@ -7,12 +7,12 @@ class Tag(models.Model):
         "Цвет",
         max_length=7,
         unique=True,
-        validators=[
+        validators=(
             RegexValidator(
                 regex=r"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
                 message="Укажите существующий цвет в формате hex",
-            )
-        ]
+            ),
+        ),
     )
     name = models.CharField(
         "Название тега",
@@ -23,7 +23,7 @@ class Tag(models.Model):
         "Слаг",
         max_length=200,
         unique=True,
-        validators=[validate_slug]
+        validators=(validate_slug,)
     )
 
     class Meta:

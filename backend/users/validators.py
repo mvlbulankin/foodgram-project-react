@@ -10,6 +10,6 @@ def validate_username(value):
         )
     if not bool(re.match(r"^[\w.@+-]+$", value)):
         raise ValidationError(
-            "Только латинские буквы, цифры, дефис и нижнее подчеркивание",
+            "Доступны латинские буквы, цифры, дефис и нижнее подчеркивание",
         )
     return value
