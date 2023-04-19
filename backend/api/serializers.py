@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
 
-from .validators import validate_ingredients, validate_tags
+from .validators import validate_ingredients
 from ingredients.models import Ingredient
 from recipes.models import Favorite, IngredientAmount, Recipe, ShoppingCart
 from tags.models import Tag
@@ -161,8 +161,8 @@ class RecipeSerializer(serializers.ModelSerializer):
                 amount=ingredient_data.get("amount"),
             )
 
-    def create_tags(self, data, recipe):
-        valid_tags = validate_tags(data.get("tags"))
+    def create_tags(self, validated_data, recipe):
+        valid_tags = validated_data.get("tags")
         tags = Tag.objects.filter(id__in=valid_tags)
         recipe.tags.set(tags)
 
