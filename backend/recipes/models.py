@@ -14,11 +14,11 @@ class Recipe(models.Model):
     )
     cooking_time = models.IntegerField(
         "Время приготовления",
-        validators=[
+        validators=(
             MinValueValidator(
                 1, "Время приготовления не может быть менее одной минуты",
-            )
-        ]
+            ),
+        ),
     )
     image = models.ImageField(
         "Изображение",
@@ -69,21 +69,21 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = "Избранное"
         verbose_name_plural = "Избранные"
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=("recipe", "user"),
                 name="unique_favorite_recipe",
-            )
-        ]
+            ),
+        )
 
 
 class IngredientAmount(models.Model):
     amount = models.PositiveIntegerField(
-        validators=[
+        validators=(
             MinValueValidator(
                 1, "Количество ингридиента не может быть менее единицы",
-            )
-        ]
+            ),
+        ),
     )
     ingredient = models.ForeignKey(
         Ingredient,
@@ -97,12 +97,12 @@ class IngredientAmount(models.Model):
     class Meta:
         verbose_name = "Количество ингредиента"
         verbose_name_plural = "Количество ингредиентов"
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=("recipe", "ingredient"),
                 name="unique_recipe_ingredient",
-            )
-        ]
+            ),
+        )
 
 
 class ShoppingCart(models.Model):
@@ -120,9 +120,9 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = "Список покупок"
         verbose_name_plural = "Список покупок"
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=("recipe", "user"),
                 name="unique_cart_recipe",
-            )
-        ]
+            ),
+        )

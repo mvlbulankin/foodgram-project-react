@@ -6,11 +6,13 @@ from djoser.views import UserViewSet
 from fpdf import FPDF
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 
 from .filters import CustomSearchFilter, RecipeFilter
-from .permissions import AuthorOrReadOnly
 from .serializers import (
     IngredientSerializer,
     RecipeSerializer,
@@ -98,7 +100,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     queryset = Recipe.objects.all()
-    permission_classes = (AuthorOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = RecipeSerializer
 
     def perform_create(self, serializer):

@@ -23,9 +23,7 @@ class User(AbstractUser):
         unique=True,
         blank=False,
         null=False,
-        validators=[
-            validate_username,
-        ]
+        validators=[validate_username]
     )
 
     def __str__(self):
@@ -55,7 +53,7 @@ class Subscription(models.Model):
                 name="unique_subscribe",
             ),
             models.CheckConstraint(
-                check=models.Q(author=models.F("user")),
+                check=~models.Q(author=models.F("user")),
                 name="self_subscribe"
-            )
+            ),
         )

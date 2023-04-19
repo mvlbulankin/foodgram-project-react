@@ -1,4 +1,4 @@
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, validate_slug
 from django.db import models
 
 
@@ -7,6 +7,12 @@ class Tag(models.Model):
         "Цвет",
         max_length=7,
         unique=True,
+        validators=[
+            RegexValidator(
+                regex=r"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+                message="Укажите существующий цвет в формате hex",
+            )
+        ]
     )
     name = models.CharField(
         "Название тега",
@@ -17,14 +23,7 @@ class Tag(models.Model):
         "Слаг",
         max_length=200,
         unique=True,
-        validators=[
-            RegexValidator(
-                regex=r"^[-a-zA-Z0-9_]+$",
-                message=(
-                    "Только латинские буквы, цифры, дефис и нижнее подчеркивание",
-                )
-            )
-        ]
+        validators=[validate_slug]
     )
 
     class Meta:
