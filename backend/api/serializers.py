@@ -24,7 +24,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             "password",
             "is_subscribed",
         )
-        write_only_fields = ("password",)
+        # write_only_fields = ("password",)
 
     def get_is_subscribed(self, obj):
         user_id = self.context.get("request").user.id
@@ -44,15 +44,33 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user
 
 
-class SubscriptionSerializer(serializers.ModelSerializer):
-    email = serializers.ReadOnlyField(source="author.email")
-    first_name = serializers.ReadOnlyField(source="author.first_name")
-    id = serializers.ReadOnlyField(source="author.id")
-    is_subscribed = serializers.SerializerMethodField()
-    last_name = serializers.ReadOnlyField(source="author.last_name")
+class SubscriptionSerializer(CustomUserSerializer):
+    email = serializers.EmailField(
+        source="author.email",
+        read_only=True,
+    )
+    first_name = serializers.CharField(
+        source="author.first_name",
+        read_only=True,
+    )
+    id = serializers.IntegerField(
+        source="author.id",
+        read_only=True,
+    )
+    # is_subscribed = serializers.SerializerMethodField()
+    last_name = serializers.CharField(
+        source="author.last_name",
+        read_only=True,
+    )
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.ReadOnlyField(source="author.recipes.count")
-    username = serializers.ReadOnlyField(source="author.username")
+    recipes_count = serializers.IntegerField(
+        source="author.recipes.count",
+        read_only=True,
+    )
+    username = serializers.CharField(
+        source="author.username",
+        read_only=True,
+    )
 
     class Meta:
         model = Subscription
@@ -66,18 +84,26 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             "recipes_count",
             "username",
         )
+        # read_only_fields = (
+        #     "email",
+        #     "id",
+        #     "first_name",
+        #     "last_name",
+        #     "recipes_count",
+        #     "username",
+        # )
 
-    def get_is_subscribed(self, obj):
-        user = self.context.get("request").user
-        return Subscription.objects.filter(
-            author=obj.author, user=user
-        ).exists()
+    # def get_is_subscribed(self, obj):
+    #     user = self.context.get("request").user
+    #     return Subscription.objects.filter(
+    #         author=obj.author, user=user
+    #     ).exists()
 
     def get_recipes(self, obj):
         limit = self.context.get("request").GET.get("recipes_limit")
         recipe_obj = obj.author.recipes.all()
         if limit:
-            recipe_obj = recipe_obj[: int(limit)]
+            recipe_obj = recipe_obj[:int(limit)]
         serializer = SimpleRecipeSerializer(recipe_obj, many=True)
         return serializer.data
 
@@ -104,22 +130,36 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source="ingredient.id")
-    name = serializers.ReadOnlyField(source="ingredient.name")
-    measurement_unit = serializers.ReadOnlyField(
-        source="ingredient.measurement_unit"
+    id = serializers.IntegerField(
+        source="ingredient.id",
+        read_only=True,
+    )
+    name = serializers.CharField(
+        source="ingredient.name",
+        read_only=True,
+    )
+    measurement_unit = serializers.CharField(
+        source="ingredient.measurement_unit",
+        read_only=True,
     )
 
     class Meta:
         model = IngredientAmount
-        fields = ("id", "name", "measurement_unit", "amount")
+        fields = (
+            "id",
+            "name",
+            "measurement_unit",
+            "amount",
+        )
 
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
     ingredients = IngredientAmountSerializer(
-        read_only=True, many=True, source="ingredientamount_set"
+        read_only=True,
+        many=True,
+        source="ingredientamount_set",
     )
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
