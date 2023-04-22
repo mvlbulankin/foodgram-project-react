@@ -1,3 +1,5 @@
+import traceback
+
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
@@ -24,7 +26,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
             "password",
             "is_subscribed",
         )
-        # write_only_fields = ("password",)
 
     def get_is_subscribed(self, obj):
         user_id = self.context.get("request").user.id
@@ -57,7 +58,6 @@ class SubscriptionSerializer(CustomUserSerializer):
         source="author.id",
         read_only=True,
     )
-    # is_subscribed = serializers.SerializerMethodField()
     last_name = serializers.CharField(
         source="author.last_name",
         read_only=True,
@@ -84,20 +84,6 @@ class SubscriptionSerializer(CustomUserSerializer):
             "recipes_count",
             "username",
         )
-        # read_only_fields = (
-        #     "email",
-        #     "id",
-        #     "first_name",
-        #     "last_name",
-        #     "recipes_count",
-        #     "username",
-        # )
-
-    # def get_is_subscribed(self, obj):
-    #     user = self.context.get("request").user
-    #     return Subscription.objects.filter(
-    #         author=obj.author, user=user
-    #     ).exists()
 
     def get_recipes(self, obj):
         limit = self.context.get("request").GET.get("recipes_limit")
@@ -180,15 +166,26 @@ class RecipeSerializer(serializers.ModelSerializer):
             "text",
         )
 
-    def get_is_favorited(self, obj):
+    def get_status(self, obj):
+        functions = {
+            "get_is_favorited": Favorite,
+            "get_is_in_shopping_cart": ShoppingCart,
+        }
         user_id = self.context.get("request").user.id
-        return Favorite.objects.filter(user=user_id, recipe=obj.id).exists()
+        call_function = format(traceback.extract_stack()[-2][2])
+        queryset = functions[call_function].objects.filter(
+            recipe=obj,
+            user=user_id,
+        )
+        if queryset.exists():
+            return True
+        return False
+
+    def get_is_favorited(self, obj):
+        return self.get_status(obj)
 
     def get_is_in_shopping_cart(self, obj):
-        user_id = self.context.get("request").user.id
-        return ShoppingCart.objects.filter(
-            user=user_id, recipe=obj.id
-        ).exists()
+        return self.get_status(obj)
 
     def create_ingredient_amount(self, valid_ingredients, recipe):
         for ingredient_data in valid_ingredients:
