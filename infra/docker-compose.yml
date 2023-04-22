@@ -1,6 +1,7 @@
 version: '3.3'
 services:
   frontend:
+    platform: linux/x86_64
     image: mvlbulankin/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
@@ -11,6 +12,7 @@ services:
     env_file:
       - .env
   backend:
+    platform: linux/x86_64
     image: mvlbulankin/foodgram_backend:latest
     restart: always
     volumes:

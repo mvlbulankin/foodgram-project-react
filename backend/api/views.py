@@ -13,6 +13,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 
 from .filters import CustomSearchFilter, RecipeFilter
+from .mixins import ErrorAlertMixin
 from .serializers import (
     IngredientSerializer,
     RecipeSerializer,
@@ -26,7 +27,7 @@ from tags.models import Tag
 from users.models import Subscription, User
 
 
-class CustomUserViewSet(UserViewSet):
+class CustomUserViewSet(UserViewSet, ErrorAlertMixin):
     queryset = User.objects.all()
 
     @action(
@@ -55,17 +56,11 @@ class CustomUserViewSet(UserViewSet):
         user = request.user
         author = get_object_or_404(User, id=id)
         if user == author:
-            return Response(
-                {"errors": "Нельзя подписаться/отписаться на/от себя"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            self.error_alert("Нельзя подписаться/отписаться на/от себя")
         subscription = Subscription.objects.filter(author=author, user=user)
         if request.method == "POST":
             if subscription.exists():
-                return Response(
-                    {"errors": "Нельзя подписаться повторно"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                self.error_alert("Нельзя подписаться повторно")
             queryset = Subscription.objects.create(author=author, user=user)
             serializer = SubscriptionSerializer(
                 queryset, context={"request": request}
@@ -73,10 +68,7 @@ class CustomUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == "DELETE":
             if not subscription.exists():
-                return Response(
-                    {"errors": "Нельзя отписаться повторно"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                self.error_alert("Нельзя отписаться повторно")
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -96,7 +88,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
 
 
-class RecipeViewSet(viewsets.ModelViewSet):
+class RecipeViewSet(viewsets.ModelViewSet, ErrorAlertMixin):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     queryset = Recipe.objects.all()
@@ -110,10 +102,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         relation = model.objects.filter(user=user, recipe=recipe)
         if relation.exists():
-            return Response(
-                {"errors": f"Нельзя повторно добавить рецепт в {name}"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            self.error_alert(f"Нельзя повторно добавить рецепт в {name}")
         model.objects.create(user=user, recipe=recipe)
         serializer = SimpleRecipeSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -122,10 +111,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         relation = model.objects.filter(user=user, recipe=recipe)
         if not relation.exists():
-            return Response(
-                {"errors": f"Нельзя повторно удалить рецепт из {name}"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            self.error_alert(f"Нельзя повторно удалить рецепт из {name}")
         relation.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

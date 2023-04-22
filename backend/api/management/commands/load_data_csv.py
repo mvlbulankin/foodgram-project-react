@@ -1,5 +1,4 @@
 import csv
-from collections import OrderedDict
 
 from django.core.management import BaseCommand
 from django.shortcuts import get_object_or_404
@@ -13,10 +12,10 @@ MODELS_FIELDS = {
     'tag': Tag,
 }
 
-DEFAULT_DATASET = OrderedDict({
+DEFAULT_DATASET = {
     'ingredients.csv': Ingredient,
     'tags.csv': Tag,
-})
+}
 
 DEFAULT_DATASET_PATH = 'static/data/'
 
