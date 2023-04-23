@@ -1,8 +1,8 @@
 import os
 
+from dotenv import load_dotenv
 from pathlib import Path
 
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -17,7 +17,8 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
     "http://*localhost",
     "https://*localhost",
-
+    "http://*84.252.137.154",
+    "https://*84.252.137.154",
 ]
 
 INSTALLED_APPS = [

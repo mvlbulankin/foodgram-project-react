@@ -9,7 +9,8 @@ def validate_username(value):
             "Недопустимое имя пользователя!"
         )
     if not bool(re.match(r"^[\w.@+-]+$", value)):
+        incorrect_symbols = re.findall("[^\\w.@+-]", value)
         raise ValidationError(
-            "Доступны латинские буквы, цифры, дефис и нижнее подчеркивание",
+            f"Введены недопустимые символы: {' '.join(incorrect_symbols)}",
         )
     return value

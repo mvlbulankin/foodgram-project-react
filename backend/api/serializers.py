@@ -1,5 +1,3 @@
-import traceback
-
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
@@ -166,14 +164,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             "text",
         )
 
-    def get_status(self, obj):
-        functions = {
-            "get_is_favorited": Favorite,
-            "get_is_in_shopping_cart": ShoppingCart,
-        }
+    def get_status(self, obj, model):
         user_id = self.context.get("request").user.id
-        call_function = format(traceback.extract_stack()[-2][2])
-        queryset = functions[call_function].objects.filter(
+        queryset = model.objects.filter(
             recipe=obj,
             user=user_id,
         )
@@ -182,10 +175,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         return False
 
     def get_is_favorited(self, obj):
-        return self.get_status(obj)
+        return self.get_status(obj, Favorite)
 
     def get_is_in_shopping_cart(self, obj):
-        return self.get_status(obj)
+        return self.get_status(obj, ShoppingCart)
 
     def create_ingredient_amount(self, valid_ingredients, recipe):
         for ingredient_data in valid_ingredients:
