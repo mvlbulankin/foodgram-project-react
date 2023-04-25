@@ -1,9 +1,6 @@
-![example workflow](https://github.com/mvlbulankin/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
+![example workflow](https://github.com/mvlbulankin/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
-# Проект Foodgram http://84.252.137.154/
-login: admin
-
-pass: admin
+# Проект Foodgram 
 
 ### Описание 
 Проект Foodgram, «Продуктовый помощник» - онлайн-сервис и API для него. На этом сервисе пользователи могут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
