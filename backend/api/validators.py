@@ -1,5 +1,4 @@
 from rest_framework.validators import ValidationError
-
 from ingredients.models import Ingredient
 
 

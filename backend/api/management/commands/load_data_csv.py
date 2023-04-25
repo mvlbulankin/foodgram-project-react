@@ -2,10 +2,8 @@ import csv
 
 from django.core.management import BaseCommand
 from django.shortcuts import get_object_or_404
-
 from ingredients.models import Ingredient
 from tags.models import Tag
-
 
 MODELS_FIELDS = {
     'ingredient': Ingredient,
